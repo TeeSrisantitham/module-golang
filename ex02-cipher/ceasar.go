@@ -11,40 +11,59 @@ func (t caesar) Decode(source string) string { return t.decode(source) }
 func NewCaesar() Cipher {
 	t := struct { caesar }{}
 
-	encrypt := func(b byte) byte {
-		r := b + 3
+	t.encode = func (source string) string {
+		return caesarCipher(source, 3)
+	}
+	t.decode = func (source string) string {
+		return caesarCipher(source, -3)
+	}
+
+	return t
+}
+
+func NewShift(shift int) Cipher {
+	if shift < -25 || shift > 25 || shift == 0 {
+		return nil
+	}
+
+	t := struct { caesar }{}
+
+	t.encode = func (source string) string {
+		return caesarCipher(source, shift)
+	}
+	t.decode = func (source string) string {
+		return caesarCipher(source, shift * -1)
+	}
+
+	return t
+}
+
+func NewVigenere(key string) Cipher {
+
+}
+
+func caesarCipher(source string, shift int) string { 
+	var resultByte []byte
+	plainText := convertToPlainText(source)
+	for i:=0; i < len(plainText); i++ {
+		resultByte = append(resultByte, shiftByte(plainText[i], shift))
+	}
+	return string(resultByte)
+}
+
+func shiftByte(b byte, shift int) byte {
+	r := b + byte(shift)
+	if shift >= 0 {
 		if r > 122 { 
 			return r - 26 
 		} else {
 			return r
 		}
-	}
-
-	decrypt := func(b byte) byte {
-		r := b - 3
+	} else {
 		if r < 97 { 
 			return r + 26 
 		} else {
 			return r
 		}
 	}
-
-	t.encode = func(source string) string { 
-		var resultByte []byte
-		plainText := convertToPlainText(source)
-		for i:=0; i < len(plainText); i++ {
-			resultByte = append(resultByte, encrypt(plainText[i]))
-		}
-		return string(resultByte)
-	}
-	t.decode = func(source string) string { 
-		var resultByte []byte
-		plainText := convertToPlainText(source)
-		for i:=0; i < len(plainText); i++ {
-			resultByte = append(resultByte, decrypt(plainText[i]))
-		}
-		return string(resultByte)
-	}
-
-	return t
 }

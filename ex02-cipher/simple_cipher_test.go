@@ -96,42 +96,42 @@ func testCipher(name string, c Cipher, tests []cipherTest, t *testing.T) {
 	}
 }
 
-// var NSATests = []cipherTest{
-// 	{"THE ENEMY IS NEAR", "qebbkbjvfpkbxo", "theenemyisnear"},
-// 	{"SPIES SEND SECRET MESSAGES",
-// 		"pmfbppbkapbzobqjbppxdbp",
-// 		"spiessendsecretmessages"},
-// 	{"THOMAS JEFFERSON DESIGNED A SUBSTITUTION CIPHER",
-// 		"qeljxpgbccboplkabpfdkbaxprypqfqrqflkzfmebo",
-// 		"thomasjeffersondesignedasubstitutioncipher"},
-// 	{"the quick brown fox jumps over the lazy dog",
-// 		"qebnrfzhyoltkclugrjmplsboqebixwvald",
-// 		"thequickbrownfoxjumpsoverthelazydog"},
-// }
+var NSATests = []cipherTest{
+	{"THE ENEMY IS NEAR", "qebbkbjvfpkbxo", "theenemyisnear"},
+	{"SPIES SEND SECRET MESSAGES",
+		"pmfbppbkapbzobqjbppxdbp",
+		"spiessendsecretmessages"},
+	{"THOMAS JEFFERSON DESIGNED A SUBSTITUTION CIPHER",
+		"qeljxpgbccboplkabpfdkbaxprypqfqrqflkzfmebo",
+		"thomasjeffersondesignedasubstitutioncipher"},
+	{"the quick brown fox jumps over the lazy dog",
+		"qebnrfzhyoltkclugrjmplsboqebixwvald",
+		"thequickbrownfoxjumpsoverthelazydog"},
+}
 
-// func TestShift(t *testing.T) {
-// 	// test shift(3) against Caesar cases.
-// 	c := NewShift(3)
-// 	if c == nil {
-// 		t.Fatal("NewShift(3) returned nil, want non-nil Cipher")
-// 	}
-// 	testCipher("Shift(3)", c, caesarTests, t)
+func TestShift(t *testing.T) {
+	// test shift(3) against Caesar cases.
+	c := NewShift(3)
+	if c == nil {
+		t.Fatal("NewShift(3) returned nil, want non-nil Cipher")
+	}
+	testCipher("Shift(3)", c, caesarTests, t)
 
-// 	// NSA and WP say Caesar uses shift of -3
-// 	c = NewShift(-3)
-// 	if c == nil {
-// 		t.Fatal("NewShift(-3) returned nil, want non-nil Cipher")
-// 	}
-// 	testCipher("Shift(-3)", c, NSATests, t)
+	// NSA and WP say Caesar uses shift of -3
+	c = NewShift(-3)
+	if c == nil {
+		t.Fatal("NewShift(-3) returned nil, want non-nil Cipher")
+	}
+	testCipher("Shift(-3)", c, NSATests, t)
 
-// 	// invalid shifts
-// 	for _, s := range []int{-27, -26, 0, 26, 27} {
-// 		if NewShift(s) != nil {
-// 			t.Fatal("NewShift(%d) returned non-nil, "+
-// 				"Want nil return for invalid argument.", s)
-// 		}
-// 	}
-// }
+	// invalid shifts
+	for _, s := range []int{-27, -26, 0, 26, 27} {
+		if NewShift(s) != nil {
+			t.Fatal("NewShift(%d) returned non-nil, "+
+				"Want nil return for invalid argument.", s)
+		}
+	}
+}
 
 // var vtests = []struct {
 // 	key   string
