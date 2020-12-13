@@ -39,7 +39,54 @@ func NewShift(shift int) Cipher {
 }
 
 func NewVigenere(key string) Cipher {
+	if !isValidKey(key) {
+		return nil
+	}
 
+	t := struct { caesar }{}
+
+	t.encode = func (source string) string {
+		plainText := convertToPlainText(source)
+		keyLen := len(key)
+
+		var resultByte []byte 
+	  var	first int = 97
+		for i:=0; i < len(plainText); i++ {
+			code := (i - ((i / keyLen) * keyLen))
+			shift := key[code] - byte(first)
+			resultByte = append(resultByte, shiftByte(plainText[i], int(shift)))
+		}
+		return string(resultByte)
+	}
+	t.decode = func (source string) string {
+		plainText := convertToPlainText(source)
+		keyLen := len(key)
+
+		var resultByte []byte 
+	  var	first int = 97
+		for i:=0; i < len(plainText); i++ {
+			code := (i - ((i / keyLen) * keyLen))
+			shift := key[code] - byte(first)
+			resultByte = append(resultByte, shiftByte(plainText[i], int(shift) * -1))
+		}
+		return string(resultByte)
+	}
+
+	return t
+}
+
+func isValidKey(key string) bool {
+	isValid := false
+	for i:=0; i < len(key); i++ {
+		current := key[i]
+		if !isValid && current != 97 {
+			isValid = true
+		} 
+		if current < 97 || current > 122 {
+			return false
+		}
+	}
+	return isValid
 }
 
 func caesarCipher(source string, shift int) string { 
