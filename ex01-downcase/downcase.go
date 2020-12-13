@@ -2,7 +2,6 @@ package downcase
 
 import (
 	"sync"
-	"fmt"
 )
 
 func Downcase(arg string) (string, error) {
@@ -20,7 +19,6 @@ func Downcase(arg string) (string, error) {
 }
 
 func downcase(arg byte, result []byte, index int, wg *sync.WaitGroup) {
-	fmt.Println(string(arg))
 	if arg >= 65 && arg <= 90 {
 		result[index] = arg + 32
 	} else {

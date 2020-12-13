@@ -1,5 +1,7 @@
 package cipher
 
+import "sync"
+
 type caesar struct { 
 	encode func(string) string
 	decode func(string) string
@@ -43,36 +45,37 @@ func NewVigenere(key string) Cipher {
 		return nil
 	}
 
+	process := func (source string, mulShift int) string {
+		plainText := convertToPlainText(source)
+		v := len(plainText)
+		result := make ([]byte, v)
+		var wg sync.WaitGroup
+		wg.Add(v)
+		for i:=0; i < v; i++ {
+			go vigenereCipher(key, plainText, mulShift, i, result, &wg)
+		}
+		wg.Wait()
+		return string(result)
+	}
+
 	t := struct { caesar }{}
 
 	t.encode = func (source string) string {
-		plainText := convertToPlainText(source)
-		keyLen := len(key)
-
-		var resultByte []byte 
-	  var	first int = 97
-		for i:=0; i < len(plainText); i++ {
-			code := (i - ((i / keyLen) * keyLen))
-			shift := key[code] - byte(first)
-			resultByte = append(resultByte, shiftByte(plainText[i], int(shift)))
-		}
-		return string(resultByte)
+		return process(source, 1)
 	}
 	t.decode = func (source string) string {
-		plainText := convertToPlainText(source)
-		keyLen := len(key)
-
-		var resultByte []byte 
-	  var	first int = 97
-		for i:=0; i < len(plainText); i++ {
-			code := (i - ((i / keyLen) * keyLen))
-			shift := key[code] - byte(first)
-			resultByte = append(resultByte, shiftByte(plainText[i], int(shift) * -1))
-		}
-		return string(resultByte)
+		return process(source, -1)
 	}
 
 	return t
+}
+
+func vigenereCipher(key string, plainText string, mulShift int, i int, result []byte, wg *sync.WaitGroup) {
+	keyLen := len(key)
+	code := (i - ((i / keyLen) * keyLen))
+	shift := key[code] - byte(97)
+	result[i] = shiftByte(plainText[i], int(shift) * mulShift)
+	wg.Done()
 }
 
 func isValidKey(key string) bool {
@@ -90,12 +93,19 @@ func isValidKey(key string) bool {
 }
 
 func caesarCipher(source string, shift int) string { 
-	var resultByte []byte
 	plainText := convertToPlainText(source)
-	for i:=0; i < len(plainText); i++ {
-		resultByte = append(resultByte, shiftByte(plainText[i], shift))
+	v := len(plainText)
+	result := make ([]byte, v)
+	var wg sync.WaitGroup
+	wg.Add(v)
+	for i:=0; i < v; i++ {
+		go func (plainText string, i int, result []byte, wg *sync.WaitGroup) {
+			result[i] = shiftByte(plainText[i], shift)
+			wg.Done()
+		} (plainText, i, result, &wg)
 	}
-	return string(resultByte)
+	wg.Wait()
+	return string(result)
 }
 
 func shiftByte(b byte, shift int) byte {
